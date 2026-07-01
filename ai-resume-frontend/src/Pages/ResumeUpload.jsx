@@ -64,8 +64,6 @@ const styles = {
   }
 }
 
-export default ResumeUpload;
-
 function ResumeUpload() {
   const [resumeFile, setResumeFile] = useState(null)
   const [jobDescription, setJobDescription] = useState('')
