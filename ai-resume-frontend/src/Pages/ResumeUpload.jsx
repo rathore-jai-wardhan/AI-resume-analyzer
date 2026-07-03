@@ -1,64 +1,89 @@
 import React, { useState } from 'react';
 
 function ResumeUpload() {
-  // We use React State to remember the backend's response
-  const [serverMessage, setServerMessage] = useState("Waiting to connect...");
+  // State to hold our user inputs
+  const [file, setFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [status, setStatus] = useState("Waiting for input...");
 
-  // This function triggers when the user clicks the button
-  const testBackendConnection = async () => {
-    setServerMessage("Sending request to backend...");
-    
+  // Update state when a file is selected
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  // Triggered when the user clicks "Analyze Resume"
+  const handleUpload = async () => {
+    if (!file) {
+      setStatus("⚠️ Please select a PDF file first.");
+      return;
+    }
+
+    setStatus("⏳ Uploading to server...");
+
+    // Create the multipart envelope required for file transfers
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("job_description", jobDescription);
+
     try {
-      // The fetch API sends a network request to your FastAPI server
       const response = await fetch("http://127.0.0.1:8000/upload-resume", {
-        method: "POST", 
+        method: "POST",
+        body: formData,
       });
       
-      // We wait for the JSON dummy response you wrote in main.py
       const data = await response.json();
-      
-      // Update the UI with the success message
-      setServerMessage(`✅ Connection Successful! Backend says: "${data.message}"`);
+      // Displays the response sent back from your FastAPI main.py
+      setStatus(`✅ Success! Backend received: ${data.filename}`);
       
     } catch (error) {
-      setServerMessage("❌ Error: Could not connect to the backend. Is Uvicorn running?");
+      setStatus("❌ Error: Could not connect to the backend.");
     }
   };
 
   return (
     <div style={styles.container}>
-      <h2>Analyze Your Resume</h2>
-      <p>This is where the file upload UI will go in Week 2.</p>
+      <h2>AI Resume Analyzer</h2>
       
-      <button onClick={testBackendConnection} style={styles.button}>
-        Test Backend Connection
+      <div style={styles.formGroup}>
+        <label><strong>1. Upload Resume (PDF)</strong></label>
+        <input 
+          type="file" 
+          accept=".pdf" 
+          onChange={handleFileChange} 
+          style={styles.input} 
+        />
+      </div>
+
+      <div style={styles.formGroup}>
+        <label><strong>2. Paste Job Description</strong></label>
+        <textarea 
+          rows="5" 
+          placeholder="Paste the job description here..."
+          value={jobDescription}
+          onChange={(e) => setJobDescription(e.target.value)}
+          style={styles.textarea}
+        />
+      </div>
+      
+      <button onClick={handleUpload} style={styles.button}>
+        Analyze Resume
       </button>
       
       <div style={styles.statusBox}>
-        <strong>Status: </strong> {serverMessage}
+        <strong>Status: </strong> {status}
       </div>
     </div>
   );
 }
 
-// Simple inline styling to keep things clean
+// Inline styling to maintain a clean UI
 const styles = {
-  container: { padding: '40px', maxWidth: '600px', margin: '0 auto' },
-  button: { 
-    padding: '10px 20px', 
-    backgroundColor: '#2563eb', 
-    color: 'white', 
-    border: 'none', 
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginTop: '20px'
-  },
-  statusBox: {
-    marginTop: '30px',
-    padding: '15px',
-    backgroundColor: '#e2e8f0',
-    borderRadius: '5px'
-  }
+  container: { padding: '40px', maxWidth: '600px', margin: '0 auto', fontFamily: 'sans-serif' },
+  formGroup: { display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' },
+  input: { padding: '10px', border: '1px solid #ccc', borderRadius: '5px' },
+  textarea: { padding: '10px', border: '1px solid #ccc', borderRadius: '5px', resize: 'vertical' },
+  button: { padding: '12px 20px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' },
+  statusBox: { marginTop: '20px', padding: '15px', backgroundColor: '#e2e8f0', borderRadius: '5px' }
 }
 
 export default ResumeUpload;
