@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Navbar from '../components/Navbar'; // Importing the navigation bar
 
 function ResumeUpload() {
   // State to hold our user inputs
@@ -20,7 +21,7 @@ function ResumeUpload() {
 
     setStatus("⏳ Uploading to server...");
 
-    // Create the multipart envelope required for file transfers
+    // Create the multipart envelope for the file and text
     const formData = new FormData();
     formData.append("resume", file);
     formData.append("job_description", jobDescription);
@@ -32,7 +33,6 @@ function ResumeUpload() {
       });
       
       const data = await response.json();
-      // Displays the response sent back from your FastAPI main.py
       setStatus(`✅ Success! Backend received: ${data.filename}`);
       
     } catch (error) {
@@ -41,42 +41,47 @@ function ResumeUpload() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>AI Resume Analyzer</h2>
+    <div>
+      {/* The Navigation Bar */}
+      <Navbar /> 
       
-      <div style={styles.formGroup}>
-        <label><strong>1. Upload Resume (PDF)</strong></label>
-        <input 
-          type="file" 
-          accept=".pdf" 
-          onChange={handleFileChange} 
-          style={styles.input} 
-        />
-      </div>
+      <div style={styles.container}>
+        <h2>Analyze Your Resume</h2>
+        
+        <div style={styles.formGroup}>
+          <label><strong>1. Upload Resume (PDF)</strong></label>
+          <input 
+            type="file" 
+            accept=".pdf" 
+            onChange={handleFileChange} 
+            style={styles.input} 
+          />
+        </div>
 
-      <div style={styles.formGroup}>
-        <label><strong>2. Paste Job Description</strong></label>
-        <textarea 
-          rows="5" 
-          placeholder="Paste the job description here..."
-          value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
-          style={styles.textarea}
-        />
-      </div>
-      
-      <button onClick={handleUpload} style={styles.button}>
-        Analyze Resume
-      </button>
-      
-      <div style={styles.statusBox}>
-        <strong>Status: </strong> {status}
+        <div style={styles.formGroup}>
+          <label><strong>2. Paste Job Description</strong></label>
+          <textarea 
+            rows="5" 
+            placeholder="Paste the job description here..."
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+            style={styles.textarea}
+          />
+        </div>
+        
+        <button onClick={handleUpload} style={styles.button}>
+          Analyze Resume
+        </button>
+        
+        <div style={styles.statusBox}>
+          <strong>Status: </strong> {status}
+        </div>
       </div>
     </div>
   );
 }
 
-// Inline styling to maintain a clean UI
+// Styling
 const styles = {
   container: { padding: '40px', maxWidth: '600px', margin: '0 auto', fontFamily: 'sans-serif' },
   formGroup: { display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' },
