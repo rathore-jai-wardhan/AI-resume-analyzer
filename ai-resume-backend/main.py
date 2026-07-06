@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import PyPDF2
 import io
 import re
+import spacy
 
 app = FastAPI(
     title="AI Resume Analyzer",
@@ -69,6 +70,7 @@ def clean_resume_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text).strip()
     
     return text    
+
 
 # --- Upgraded Endpoint ---
 @app.post("/upload-resume")
