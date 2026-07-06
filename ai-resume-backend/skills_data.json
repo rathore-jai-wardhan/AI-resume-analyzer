@@ -1,0 +1,40 @@
+{
+  "programming_languages": [
+    "python", "javascript", "typescript", "java", "c++", "c#",
+    "go", "rust", "kotlin", "swift", "r", "scala", "php", "ruby"
+  ],
+
+  "frontend": [
+    "react", "react js", "vue", "angular", "html", "css", "sass",
+    "tailwind", "bootstrap", "next.js", "redux", "figma"
+  ],
+
+  "backend": [
+    "fastapi", "django", "flask", "node.js", "express",
+    "rest api", "graphql", "microservices", "jwt"
+  ],
+
+  "databases": [
+    "sql", "postgresql", "mysql", "mongodb", "sqlite",
+    "redis", "firebase", "elasticsearch"
+  ],
+
+  "ai_and_ml": [
+    "machine learning", "deep learning", "nlp",
+    "natural language processing", "text processing",
+    "data preprocessing", "feature engineering",
+    "model training", "model evaluation",
+    "pandas", "numpy", "scikit-learn", "tensorflow",
+    "pytorch", "spacy", "computer vision"
+  ],
+
+  "devops_and_tools": [
+    "git", "github", "docker", "kubernetes", "aws",
+    "azure", "linux", "ci/cd", "jenkins"
+  ],
+
+  "soft_skills": [
+    "communication", "teamwork", "leadership",
+    "problem solving", "critical thinking", "collaboration"
+  ]
+}
