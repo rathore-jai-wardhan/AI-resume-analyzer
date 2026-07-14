@@ -3,24 +3,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from services.skill_extractor import extract_skills
 
 
-def calculate_ats_score(resume_text: str, job_description: str) -> int:
-  
-    if not resume_text or not job_description:
-        return 0
-
-    # TF-IDF converts both texts into numerical vectors
-    # stop_words='english' ignores common words like "the", "is", "and"
-    vectorizer = TfidfVectorizer(stop_words='english')
-    vectors = vectorizer.fit_transform([resume_text, job_description])
-
-    # cosine_similarity returns a value between 0 and 1
-    # vectors[0] = resume, vectors[1] = job description
-    score = cosine_similarity(vectors[0], vectors[1])[0][0]
-
-    # Convert to 0-100 and round to a clean integer
-    return round(score * 100)
-
-
 def get_skill_gap(resume_text: str, job_description: str) -> dict:
    
     resume_skills = set(extract_skills(resume_text))
