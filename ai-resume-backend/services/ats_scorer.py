@@ -61,7 +61,7 @@ for this exact job. Return ONLY a plain list, one recommendation per line,
 no numbering, no extra commentary."""
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-flash-latest",
         contents=prompt,
     )
 
