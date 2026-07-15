@@ -8,6 +8,11 @@ import json
 import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import os
+from google import genai
+from services.ats_scorer import calculate_ats_score
+from services.ats_scorer import get_skill_gap, generate_recommendations
+from services.skills_extractor import extract_skills
 
 # ─────────────────────────────────────────
 # APP SETUP
@@ -71,73 +76,6 @@ def clean_resume_text(text: str) -> str:
     text = re.sub(r'[^a-z0-9\s]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
-
-def extract_skills(text: str) -> list:
-    """Matches text against TARGET_SKILLS list."""
-    doc = nlp(text.lower())
-    processed_text = doc.text
-    found_skills = set()
-    for skill in TARGET_SKILLS:
-        if skill in processed_text:
-            found_skills.add(skill)
-    return sorted(list(found_skills))
-
-
-def calculate_ats_score(resume_text: str, job_description: str) -> int:
-    """Calculates ATS score using TF-IDF + cosine similarity."""
-    if not resume_text or not job_description:
-        return 0
-    vectorizer = TfidfVectorizer(stop_words='english')
-    vectors = vectorizer.fit_transform([resume_text, job_description])
-    score = cosine_similarity(vectors[0], vectors[1])[0][0]
-    return round(score * 100)
-
-
-def get_skill_gap(resume_text: str, job_description: str) -> dict:
-    """Compares skills in resume vs job description."""
-    resume_skills = set(extract_skills(resume_text))
-    job_skills = set(extract_skills(job_description))
-    return {
-        "resume_skills": sorted(list(resume_skills)),
-        "job_skills": sorted(list(job_skills)),
-        "matching_skills": sorted(list(resume_skills & job_skills)),
-        "missing_skills": sorted(list(job_skills - resume_skills)),
-    }
-
-
-def generate_recommendations(missing_skills: list, ats_score: int) -> list:
-    """Generates actionable suggestions based on score and missing skills."""
-    recommendations = []
-
-    if ats_score >= 75:
-        recommendations.append(
-            f"Strong match! Your resume scores {ats_score}/100 against this job."
-        )
-    elif ats_score >= 50:
-        recommendations.append(
-            f"Decent match at {ats_score}/100. A few targeted improvements will help."
-        )
-    else:
-        recommendations.append(
-            f"Low match at {ats_score}/100. Consider tailoring your resume more closely."
-        )
-
-    if not missing_skills:
-        recommendations.append(
-            "Great — your resume covers all key skills in this job description!"
-        )
-    else:
-        for skill in missing_skills[:5]:
-            recommendations.append(
-                f"Consider adding '{skill}' to your resume if you have experience with it."
-            )
-
-    recommendations.append(
-        "Mirror the exact keywords from the job description — ATS systems do exact matching."
-    )
-    return recommendations
-
 
 # ─────────────────────────────────────────
 # ENDPOINTS
