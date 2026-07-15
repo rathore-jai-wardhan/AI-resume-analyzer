@@ -4,3 +4,4 @@ python-multipart
 PyPDF2
 spaCy
 scikit-learn
+google-genai
