@@ -1,6 +1,8 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from services.skill_extractor import extract_skills
+from services.skills_extractor import extract_skills
+import os
+from google import genai
 
 def calculate_ats_score(resume_text: str, job_description: str) -> int:
   
@@ -36,39 +38,33 @@ def get_skill_gap(resume_text: str, job_description: str) -> dict:
     }
 
 
-def generate_recommendations(missing_skills: list[str], ats_score: int) -> list[str]:
-  
-    recommendations = []
 
-    # Score-based general advice
-    if ats_score >= 75:
-        recommendations.append(
-            f"Strong match! Your resume scores {ats_score}/100 against this job."
-        )
-    elif ats_score >= 50:
-        recommendations.append(
-            f"Decent match at {ats_score}/100. A few targeted improvements will help."
-        )
-    else:
-        recommendations.append(
-            f"Low match at {ats_score}/100. Consider tailoring your resume more closely to this role."
-        )
 
-    # Skill-specific advice
-    if not missing_skills:
-        recommendations.append(
-            "Great news — your resume covers all the key skills in this job description!"
-        )
-    else:
-        # Only show top 5 missing skills so it doesn't overwhelm the user
-        for skill in missing_skills[:5]:
-            recommendations.append(
-                f"Consider adding '{skill}' to your resume if you have experience with it."
-            )
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-    # Always add this general tip
-    recommendations.append(
-        "Mirror the exact keywords from the job description in your resume — ATS systems do exact matching."
+def generate_recommendations(resume_text: str, job_description: str,
+                              missing_skills: list[str], ats_score: int) -> list[str]:
+
+    prompt = f"""You are a career coach reviewing a resume against a job description.
+
+ATS match score: {ats_score}/100
+Missing skills: {', '.join(missing_skills) if missing_skills else 'none'}
+
+Resume:
+{resume_text}
+
+Job description:
+{job_description}
+
+Give 3-5 short, specific, actionable recommendations to improve this resume
+for this exact job. Return ONLY a plain list, one recommendation per line,
+no numbering, no extra commentary."""
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
     )
 
-    return recommendations
+    # response.text is one big string — split it into a list of lines
+    lines = [line.strip("-• ").strip() for line in response.text.split("\n") if line.strip()]
+    return lines
