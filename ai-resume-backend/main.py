@@ -10,11 +10,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import os
 from google import genai
+from dotenv import load_dotenv 
+load_dotenv()
 from services.ats_scorer import calculate_ats_score
 from services.ats_scorer import get_skill_gap, generate_recommendations
 from services.skills_extractor import extract_skills
-from dotenv import load_dotenv 
-load_dotenv()
+
 
 # ─────────────────────────────────────────
 # APP SETUP
