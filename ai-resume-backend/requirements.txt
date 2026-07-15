@@ -5,3 +5,4 @@ PyPDF2
 spaCy
 scikit-learn
 google-genai
+python-dotenv

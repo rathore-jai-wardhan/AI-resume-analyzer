@@ -13,6 +13,8 @@ from google import genai
 from services.ats_scorer import calculate_ats_score
 from services.ats_scorer import get_skill_gap, generate_recommendations
 from services.skills_extractor import extract_skills
+from dotenv import load_dotenv 
+load_dotenv()
 
 # ─────────────────────────────────────────
 # APP SETUP
@@ -124,9 +126,11 @@ async def upload_resume(
 
     # Step 6: Generate recommendations
     recommendations = generate_recommendations(
-        skill_data["missing_skills"],
-        ats_score
-    )
+    resume_text,
+    cleaned_jd,
+    skill_data["missing_skills"],
+    ats_score
+)
 
     # Step 7: Return everything
     return {
